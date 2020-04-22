@@ -1,0 +1,140 @@
+import random
+suits = ('Hearts', 'Diamonds', 'Spades', 'Clubs')
+ranks = ('Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Jack', 'Queen', 'King', 'Ace')
+values = {'Two':2, 'Three':3, 'Four':4, 'Five':5, 'Six':6, 'Seven':7, 'Eight':8, 'Nine':9, 'Ten':10, 'Jack':10,
+         'Queen':10, 'King':10, 'Ace':11}
+class Card():
+        
+        def __init__(self,suit,rank):
+            self.suit=suit
+            self.rank=rank
+        def talk(self):
+            return (self.rank+" of "+self.suit)
+balance=100
+deck=[]
+gameon=True
+roundpaly=True
+roundscount=0
+another='yes'
+
+
+def yoursum(values,st):
+    s=0
+    acecout=0
+    for i in st:
+        s=s+values[i.rank]
+        if i.rank=='Ace':
+            acecout=acecout+1
+    while s>21 and acecout>0:
+        s=s-10
+        acecout=acecout-1
+    return s
+
+def yourcards(player):
+    print('your cards are --')
+    for i in player:
+        print(i.talk())
+for s in suits:
+    for r in ranks:
+        card=Card(s,r)
+        deck.append(card)
+        
+while gameon==True:
+    print('your balance is ---',balance,' $')
+    if balance==0:
+        gameon=False
+        print("you have no cash to continue \n see you next time")
+        break
+    roundscount=roundscount+1
+    if roundscount>1:
+        another=input('would you like to have another go ? \n yes or no ')
+        while another!='yes' and another!='no':
+            another=input('would you like to have another go ? \n yes or no ')
+        roundscount=roundscount+1
+    if another.lower()=='yes':
+        roundplay=True
+    else:
+        print('you cashed out with ---',balance,'$')
+        print('see you next time')
+        gameon=False
+    while roundplay==True:
+        dealer=[]
+        player=[]
+        hand=random.sample(range(0,52),k=15)
+        dealer=[deck[hand[0]],deck[hand[3]]]
+        player=[deck[hand[1]],deck[hand[2]]]
+        bet=0
+        while bet<=0: 
+            try:
+                while bet<=0:
+                    bet= int(input('please place a bet'))
+                while bet>balance:
+                    print('insufficient funds \n place a bet smaller or equal to',balance,' $')
+                    bet =int(input("please place a bet "))
+            except:
+                    bet=0
+        print('bet = ',bet)
+        balance=balance-bet
+        print('your cards are -- ', player[0].talk(),' and ',player[1].talk(),' (',yoursum(values,player),' points)')
+        print("the dealer's first card is --",dealer[0].talk())
+        if yoursum(values,player)==21:
+            print('you WON with a BLACKJACK !')
+            balance=balance+bet*2
+            roundpaly=False
+            break
+        hitcount=4
+        hit=input('would you like a hit ? yes or no ')
+        while hit.lower()!='yes' and hit.lower()!='no':
+            hit=input('would you like a hit ? yes or no ')
+        while hit.lower()=='yes':
+                hitcount=hitcount+1
+                print('you got the ',deck[hand[hitcount]].talk())
+                player.append(deck[hand[hitcount]])
+                if yoursum(values,player) >21:
+                    print("BUST ! ! !")
+                    roundplay=False
+                    break
+                if yoursum(values,player)==21:
+                    print("BLACK JACK !")
+                    balance=balance+bet*2
+                    print('you doubled your bet')
+                    roundplay=False
+                    break
+                print('your points = ',yoursum(values,player))
+                hit=input('would you like a hit ? yes or no')
+                while hit.lower()!='yes' and hit.lower()!='no':
+                    hit=input('would you like a hit ? yes or no')
+        if roundplay==False:
+            break
+        print("the dealer's second card is --",dealer[1].talk())
+        dcount=1
+        while yoursum(values,dealer)<17:
+            dcount=dcount+1
+            dealer.append(deck[hand[hitcount]])
+            hitcount=hitcount+1
+            print('the dealer got the ',dealer[dcount].talk(),' now he has ',yoursum(values,dealer),' points')
+        if  yoursum(values,dealer)>21:
+            print("the dealer's BUSTED --- you just WON !")
+            balance=balance+bet*2
+            print('you doubled your bet')
+            roundplay=False
+            break
+        if yoursum(values,dealer)==21:
+            print('the dealer has a BLACK JACK you lost !')
+            roundplay=False
+            break
+        if yoursum(values,dealer)<yoursum(values,player):
+            print('you WON this round ! ')
+            balance=balance+bet*2
+            print('you doubled your bet ')
+            roundplay=False
+            break
+        if yoursum(values,dealer)>yoursum(values,player):
+            print('the dealer won and you LOST')
+            roundplay=False
+            break
+        if yoursum(values,dealer)==yoursum(values,player):
+            print('ITS A TIE')
+            balance=balance+bet
+            roundplay=False
+            break
