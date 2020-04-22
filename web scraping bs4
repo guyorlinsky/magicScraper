@@ -1,0 +1,17 @@
+import requests
+from bs4 import BeautifulSoup
+import datetime
+
+page = requests.get('https://magicseaweed.com/Dromi-Herzlyia-Marina-Surf-Report/4744/')
+soup = BeautifulSoup(page.content,'html.parser')
+wavesize=(soup.find_all(class_='h3 font-sans-serif heavy nomargin text-white'))
+daycount=1
+td=datetime.date.today()
+print ('---',td,'---')
+for n in wavesize:
+	print(n.get_text())
+	if daycount%8==0:
+		td=td.replace(day=td.day+1)
+		print('---',td,'---')
+	daycount+=1
+e=input('exit?')
