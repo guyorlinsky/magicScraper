@@ -15,3 +15,4 @@ for n in wavesize:
 		print('---',td,'---')
 	daycount+=1
 e=input('exit?')
+#prints wave size forcast from magicseaweed.
